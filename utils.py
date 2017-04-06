@@ -64,6 +64,7 @@ def merge(images, size):
 
 def imsave(images, size, path):
   image = np.squeeze(merge(images, size))
+  print('saving image')
   return scipy.misc.imsave(path, image)
 
 def center_crop(x, crop_h, crop_w,
@@ -169,17 +170,34 @@ def make_gif(images, fname, duration=2, true_image=False):
   clip = mpy.VideoClip(make_frame, duration=duration)
   clip.write_gif(fname, fps = len(images) / duration)
 
+def interpolate_digit(x, y, w):
+  return x + (y-x)*w
+
+def interpolate_row(a, b, w):
+  col = len(a)
+  return [interpolate_digit(a[i], b[i], w) for i in range(col)]
+
+def interpolate_grid(a, b, steps):
+  return np.array([interpolate_row(a,b, i/(float(steps)-1)) for i in range(0, steps)])
+
+
 def visualize(sess, dcgan, config, option):
   image_frame_dim = int(math.ceil(config.batch_size**.5))
+  print(option)
   if option == 0:
-    z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
-    samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
-    save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_%s.png' % strftime("%Y%m%d%H%M%S", gmtime()))
+
+    for idx in xrange(50):
+      z_1 = np.random.uniform(-0.5, 0.5, size=(dcgan.z_dim))
+      z_2 = np.random.uniform(-0.5, 0.5, size=(dcgan.z_dim))
+      z_sample = np.array(interpolate_grid(z_1, z_2, 64))
+      samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+      save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_%s.png' % strftime("%Y%m%d%H%M%S", gmtime()))
   elif option == 1:
     values = np.arange(0, 1, 1./config.batch_size)
     for idx in xrange(100):
       print(" [*] %d" % idx)
-      z_sample = np.zeros([config.batch_size, dcgan.z_dim])
+      # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
+      z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
@@ -220,7 +238,8 @@ def visualize(sess, dcgan, config, option):
     values = np.arange(0, 1, 1./config.batch_size)
     for idx in xrange(100):
       print(" [*] %d" % idx)
-      z_sample = np.zeros([config.batch_size, dcgan.z_dim])
+      z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
+      # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
