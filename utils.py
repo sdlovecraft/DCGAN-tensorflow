@@ -183,12 +183,12 @@ def interpolate_grid(a, b, steps):
 
 def visualize(sess, dcgan, config, option):
   image_frame_dim = int(math.ceil(config.batch_size**.5))
-  option = 0
+  option = 3
   if option == 0:
 
-    for idx in xrange(1):
-      z_1 = np.random.uniform(-0.5, 0.5, size=(dcgan.z_dim))
-      z_2 = np.random.uniform(0.5, 0.5, size=(dcgan.z_dim))
+    for idx in xrange(5):
+      z_1 = np.random.uniform(-0.99, 0.99, size=(dcgan.z_dim))
+      z_2 = np.random.uniform(-0.99, 0.99, size=(dcgan.z_dim))
       z_sample = np.array(interpolate_grid(z_1, z_2, 64))
       samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
       save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_%s.png' % strftime("%Y%m%d%H%M%S", gmtime()))
@@ -197,7 +197,7 @@ def visualize(sess, dcgan, config, option):
     for idx in xrange(100):
       print(" [*] %d" % idx)
       # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
-      z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
+      z_sample = np.random.uniform(-0.99, 0.99, size=(config.batch_size, dcgan.z_dim))
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
@@ -234,20 +234,19 @@ def visualize(sess, dcgan, config, option):
         make_gif(samples, './samples/test_gif_%s.gif' % (idx))
       except:
         save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_%s.png' % strftime("%Y%m%d%H%M%S", gmtime()))
+
+
   elif option == 3:
     values = np.arange(0, 1, 1./config.batch_size)
     total_samples = []
-    for idx in xrange(3):
+    for idx in xrange(5):
       print(" [*] %d" % idx)
       if idx == 0:
-        z_1 = np.random.uniform(-0.5, 0.5, size=(dcgan.z_dim))
-        z_2 = np.random.uniform(0.5, 0.5, size=(dcgan.z_dim))
+        z_1 = np.random.uniform(-0.95, -0.95, size=(dcgan.z_dim))
+        z_2 = np.random.uniform(0.95, 0.95, size=(dcgan.z_dim))
       else:
         z_1 = z_2
-        if idx % 2 == 0:
-          z_2 = np.random.uniform(0.5, 0.5, size=(dcgan.z_dim))
-        else:
-          z_2 = np.random.uniform(-0.5, -0.5, size=(dcgan.z_dim))
+        z_2 = np.random.uniform(-0.95, 0.95, size=(dcgan.z_dim))
 
 
       z_sample = np.array(interpolate_grid(z_1, z_2, 64))
