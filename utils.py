@@ -153,6 +153,26 @@ def to_json(output_path, *layers):
                W.shape[0], W.shape[3], biases, gamma, beta, fs)
     layer_f.write(" ".join(lines.replace("'","").split()))
 
+def make_movie(images, fname, duration=2, true_image=False):
+  import moviepy.editor as mpy
+  fps = 24
+  duration = len(images)/fps
+
+  def make_frame(t):
+    try:
+      x = images[int(len(images)/duration*t)]
+    except:
+      x = images[-1]
+
+    if true_image:
+      return x.astype(np.uint8)
+    else:
+      return ((x+1)/2*255).astype(np.uint8)
+
+  clip = mpy.VideoClip(make_frame,duration=duration)
+  clip.write_videofile(fname, fps = fps)
+  # clip.write_gif(fname, fps = len(images) / duration)
+
 def make_gif(images, fname, duration=2, true_image=False):
   import moviepy.editor as mpy
 
@@ -186,18 +206,18 @@ def visualize(sess, dcgan, config, option):
   option = 3
   if option == 0:
 
-    for idx in xrange(5):
-      z_1 = np.random.uniform(-0.99, 0.99, size=(dcgan.z_dim))
-      z_2 = np.random.uniform(-0.99, 0.99, size=(dcgan.z_dim))
+    for idx in xrange(2):
+      z_1 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
+      z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
       z_sample = np.array(interpolate_grid(z_1, z_2, 64))
       samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
       save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_%s.png' % strftime("%Y%m%d%H%M%S", gmtime()))
   elif option == 1:
     values = np.arange(0, 1, 1./config.batch_size)
-    for idx in xrange(100):
+    for idx in xrange(3):
       print(" [*] %d" % idx)
       # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
-      z_sample = np.random.uniform(-0.99, 0.99, size=(config.batch_size, dcgan.z_dim))
+      z_sample = np.random.uniform(-1, 1, size=(config.batch_size, dcgan.z_dim))
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
@@ -210,7 +230,7 @@ def visualize(sess, dcgan, config, option):
       else:
         samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
 
-      save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_arange_%s.png' % (idx))
+      save_images(samples, [image_frame_dim, image_frame_dim], './samples/4_test_arange_%s.png' % (idx))
   elif option == 2:
     values = np.arange(0, 1, 1./config.batch_size)
     for idx in [random.randint(0, 99) for _ in xrange(100)]:
@@ -239,25 +259,29 @@ def visualize(sess, dcgan, config, option):
   elif option == 3:
     values = np.arange(0, 1, 1./config.batch_size)
     total_samples = []
-    for idx in xrange(5):
+    for idx in xrange(15):
       print(" [*] %d" % idx)
       if idx == 0:
-        z_1 = np.random.uniform(-0.95, -0.95, size=(dcgan.z_dim))
-        z_2 = np.random.uniform(0.95, 0.95, size=(dcgan.z_dim))
+        z_1 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
+        z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
       else:
         z_1 = z_2
-        z_2 = np.random.uniform(-0.95, 0.95, size=(dcgan.z_dim))
+        z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
 
 
-      z_sample = np.array(interpolate_grid(z_1, z_2, 64))
+      z_sample = np.array(interpolate_grid(z_1, z_2, 128))
+      z_mid = int(len(z_sample)/2)
+      z_1_sample = z_sample[:z_mid]
+      z_2_sample = z_sample[z_mid:]
       # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
-      for kdx, z in enumerate(z_sample):
-        z[idx] = values[kdx]
+      # for kdx, z in enumerate(z_sample):
+      #   z[idx] = values[kdx]
 
-      samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
-      total_samples = [*total_samples, *samples]
+      sample_1 = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_1_sample})
+      sample_2 = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_2_sample})
+      total_samples = [*total_samples, *sample_1, *sample_2]
 
-    make_gif(total_samples, './samples/test_gif_%s.gif' % (idx))
+    make_movie(total_samples, './samples/test_movi_1s.mp4')
   elif option == 4:
     image_set = []
     values = np.arange(0, 1, 1./config.batch_size)
