@@ -183,12 +183,11 @@ def interpolate_grid(a, b, steps):
 
 def visualize(sess, dcgan, config, option):
   image_frame_dim = int(math.ceil(config.batch_size**.5))
-  print(option)
   if option == 0:
 
     for idx in xrange(50):
-      z_1 = np.random.uniform(-0.5, 0.5, size=(dcgan.z_dim))
-      z_2 = np.random.uniform(-0.5, 0.5, size=(dcgan.z_dim))
+      z_1 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
+      z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
       z_sample = np.array(interpolate_grid(z_1, z_2, 64))
       samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
       save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_%s.png' % strftime("%Y%m%d%H%M%S", gmtime()))
@@ -197,7 +196,7 @@ def visualize(sess, dcgan, config, option):
     for idx in xrange(100):
       print(" [*] %d" % idx)
       # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
-      z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
+      z_sample = np.random.uniform(-1, 1, size=(config.batch_size, dcgan.z_dim))
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
