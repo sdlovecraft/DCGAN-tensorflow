@@ -259,29 +259,30 @@ def visualize(sess, dcgan, config, option):
   elif option == 3:
     values = np.arange(0, 1, 1./config.batch_size)
     total_samples = []
-    for idx in xrange(15):
-      print(" [*] %d" % idx)
-      if idx == 0:
-        z_1 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
-        z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
-      else:
-        z_1 = z_2
-        z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
+    for idx_i in xrange(10):
+      for idx in xrange(15):
+        print(" [*] %d" % idx)
+        if idx == 0:
+          z_1 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
+          z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
+        else:
+          z_1 = z_2
+          z_2 = np.random.uniform(-1, 1, size=(dcgan.z_dim))
 
 
-      z_sample = np.array(interpolate_grid(z_1, z_2, 128))
-      z_mid = int(len(z_sample)/2)
-      z_1_sample = z_sample[:z_mid]
-      z_2_sample = z_sample[z_mid:]
-      # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
-      # for kdx, z in enumerate(z_sample):
-      #   z[idx] = values[kdx]
+        z_sample = np.array(interpolate_grid(z_1, z_2, 128))
+        z_mid = int(len(z_sample)/2)
+        z_1_sample = z_sample[:z_mid]
+        z_2_sample = z_sample[z_mid:]
+        # z_sample = np.zeros([config.batch_size, dcgan.z_dim])
+        # for kdx, z in enumerate(z_sample):
+        #   z[idx] = values[kdx]
 
-      sample_1 = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_1_sample})
-      sample_2 = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_2_sample})
-      total_samples = [*total_samples, *sample_1, *sample_2]
+        sample_1 = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_1_sample})
+        sample_2 = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_2_sample})
+        total_samples = [*total_samples, *sample_1, *sample_2]
 
-    make_movie(total_samples, './samples/test_movi_1s.mp4')
+      make_movie(total_samples, './samples/test_movi_1s.mp4')
   elif option == 4:
     image_set = []
     values = np.arange(0, 1, 1./config.batch_size)
