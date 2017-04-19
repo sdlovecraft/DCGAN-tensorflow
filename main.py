@@ -56,7 +56,7 @@ def main(_):
           batch_size=FLAGS.batch_size,
           sample_num=FLAGS.batch_size,
           y_dim=10,
-          c_dim=1,
+          c_dim=3,
           dataset_name=FLAGS.dataset,
           input_fname_pattern=FLAGS.input_fname_pattern,
           is_crop=FLAGS.is_crop,

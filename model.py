@@ -146,8 +146,8 @@ class DCGAN(object):
   def train(self, config):
     """Train DCGAN"""
     if config.dataset == 'mnist':
-      data_x, data_y = self.load_mnist()
-      print('data', data_x.shape, data_y.shape)
+      data_X, data_y = self.load_mnist()
+      print('data', data_X.shape, data_y.shape)
     else:
       data = glob(os.path.join("./data", config.dataset, self.input_fname_pattern))
     #np.random.shuffle(data)

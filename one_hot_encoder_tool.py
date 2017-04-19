@@ -23,7 +23,7 @@ def get_one_hot_data(d):
         one_hot_arr = np.zeros(len(dirs))
         one_hot_arr[i] = 1
 
-        filenames = get_filenames(dirname)[:3]
+        filenames = get_filenames(dirname)
         random.shuffle(filenames)
         for fname in filenames:
             img = scipy.misc.imread(fname)
