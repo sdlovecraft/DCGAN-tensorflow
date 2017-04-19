@@ -146,7 +146,8 @@ class DCGAN(object):
   def train(self, config):
     """Train DCGAN"""
     if config.dataset == 'mnist':
-      data_X, data_y = self.load_mnist()
+      data_x, data_y = self.load_mnist()
+      print('data', data_x.shape, data_y.shape)
     else:
       data = glob(os.path.join("./data", config.dataset, self.input_fname_pattern))
     #np.random.shuffle(data)
@@ -463,9 +464,9 @@ class DCGAN(object):
         return tf.nn.sigmoid(deconv2d(h2, [self.batch_size, s_h, s_w, self.c_dim], name='g_h3'))
 
   def load_mnist(self):
-    data = ohet.get_one_hot_data('./data/mnist')
-    X = data[0]/255
-    Y = data[1]
+    X, Y = ohet.get_one_hot_data('./data/mnist')
+    X = X/255
+
     return X, Y
 
   @property
