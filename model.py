@@ -1,5 +1,6 @@
 from __future__ import division
 import os
+import h5py
 import time
 import math
 from glob import glob
@@ -464,8 +465,11 @@ class DCGAN(object):
         return tf.nn.sigmoid(deconv2d(h2, [self.batch_size, s_h, s_w, self.c_dim], name='g_h3'))
 
   def load_mnist(self):
-    X, Y = ohet.get_one_hot_data('./data/mnist')
-    X = X/255
+    # X, Y = ohet.get_one_hot_data('./data/mnist')
+    h5f = h5py.File('./data/mnist.h5','r')
+    X = h5f['mnist_X']
+    Y = h5f['mnist_Y']
+    print(Y.shape)
 
     return X, Y
 
