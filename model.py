@@ -171,7 +171,7 @@ class DCGAN(object):
     sample_z = np.random.uniform(-1, 1, size=(self.sample_num , self.z_dim))
     
     if config.dataset == 'mnist':
-      sample_inputs = data_X[0:self.sample_num]
+      sample_inputs = data_X[0:self.sample_num] / 255
       sample_labels = data_y[0:self.sample_num]
     else:
       sample_files = data[0:self.sample_num]
@@ -469,7 +469,6 @@ class DCGAN(object):
     h5f = h5py.File('./data/mnist.h5','r')
     X = h5f['mnist_X']
     Y = h5f['mnist_Y']
-    print(Y.shape)
 
     return X, Y
 
